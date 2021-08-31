@@ -1,0 +1,12 @@
+{
+  "/api": {
+    "target": "https://eng-empire-315722.wl.r.appspot.com/",
+    "secure": false,
+    "logLevel": "debug",
+    "changeOrigin": true,
+    "pathRewrite": {
+      "^/api": ""
+    }
+  }
+}
+
