@@ -1,0 +1,532 @@
+
+<br>
+<div class="container">
+<div class="jumbotron" >
+
+    <h4 class="text-center">Entertainment Event Ticket Search</h4>
+    <br>
+      
+    <form class="form-horizontal" #eventform="ngForm"  >
+      <div class="form-group row justify-content-left required">
+      <label for="keyword" class="control col-sm-2 offset-sm-2">Keyword<span style="color: red;">*</span></label>
+      <div class="col-sm-6">
+       
+        <!-- <input type="text" required  class="form-control" #keyword = "ngModel"  [class.is-invalid]="keyword.invalid && keyword.touched" name="keyword" placeholder="Enter Artist, Team or Event Name (eg. Lakers)" [value]="" (input)="getValue($event)" matInput [matAutocomplete]="auto" [(ngModel)]="inputInfoModel.keyword" > -->
+        <input type="text" required class="form-control" ngModel name="keyword"  pattern=".*[^ ].*" placeholder="Enter Artist, Team or Event Name (eg. Lakers)"  (keyup) = getval($event) matInput [matAutocomplete]="auto" #keyword='ngModel' [class.is-invalid]="keyword.invalid && keyword.touched">
+
+
+      <mat-autocomplete #auto="matAutocomplete">
+        <mat-option *ngFor='let option of result_key' [value] = "option">
+           {{option}}
+        </mat-option>
+      </mat-autocomplete>
+     
+        <div class="invalid-feedback">
+          Please enter a keyword.
+        </div>
+      </div>
+    </div>
+
+
+    <div class="form-group row justify-content-left required">
+      <label for="category" class="control col-sm-2 offset-sm-2">Category</label>
+
+     
+        <div class="col-sm-4">
+          <select [(ngModel)]="cat_init" name="category" class="form-control" id="category">
+
+            <option *ngFor="let option of categories" [value]="option">{{option}}</option>
+
+          </select>        
+        </div>
+
+      
+    </div>
+
+
+    <div class="form-group row justify-content-left required">
+      <label for="distance" class="control col-sm-2 offset-sm-2">Distance</label>
+
+     
+        <div class="col-sm-3">
+          <input type="text" class="form-control" id= "distance" placeholder="10" ngModel name="distance">
+        </div>
+        <div class="col-sm-3">
+          <select [(ngModel)]=unit_init name="units" class="form-control" id="units">
+
+            <option>miles</option>
+            <option>kilometers</option>
+
+
+          </select>  
+          <!-- <input type="text" class="form-control" placeholder="miles"  ngModel name="units"> -->
+        </div>
+      
+    </div>
+    <div class="form-group row justify-content-left required">
+      <label for="distance" class="control col-sm-2 offset-sm-2">From<span style="color: red;">*</span></label>
+      <div >
+      <div class="form-check" align="left">
+        <input class="form-check-input" type="radio" name="loc" id="here_radio" (change)="changeloc($event)" value='here' checked >
+        <label class="form-check-label" for ="here">Current location</label>
+      </div>
+
+      <div class="form-check col" align="left">
+        <input class="form-check-input" type="radio"  name="loc" id="location_radio" (change)="changeloc($event)" value='location'>
+        <label class="form-check-label" for ="location">Other. Please specify</label>
+        <!-- <input type="text" required class="form-control" ngModel name="keyword"  placeholder="Enter Artist, Team or Event Name (eg. Lakers)"  (keyup) = getval($event) matInput [matAutocomplete]="auto" #keyword='ngModel' [class.is-invalid]="keyword.invalid && keyword.touched"> -->
+
+        <input type="text" class="form-control" ngModel name="location" ng-if="!buttondisabled"  pattern=".*[^ ].*" id="location" [disabled]="locdisabled" required (keyup)=getlocationval($event) #location='ngModel' [class.is-invalid]="location.invalid && location.touched">
+        <div class="invalid-feedback">
+          Please provide a location
+        </div>
+      </div>
+
+    </div>
+      
+    </div>
+    <div class="form-group row">
+      <div class="control-label offset-sm-2 mb-4">
+        <button type="button" class="btn btn-primary"  type="submit" [disabled] = "!getDummy()" (click)="getEventlist(eventform.value); $event.preventDefault()">
+          <i class="material-icons icons_mat" >search</i>Search
+        </button>
+        &nbsp;&nbsp;
+        <button  class="btn btn-light" type="reset" (click)="clearForm()" >
+          <span class="material-icons icons_mat">clear_all</span>
+          Clear
+        </button>
+      </div>
+    </div>
+    <script>
+      // function clear(){
+      //   document.getElementById('keyword').innerHTML =''
+      //   document.getElementById('location').di
+
+
+      // }
+    </script>
+
+    </form>
+
+  </div>
+
+
+
+
+<div class="container text-center">
+  
+  <button id="result" type="button" class="btn btn-primary "  (click) ="change_class_result($event); $event.preventDefault(); " type="submit" >Results</button>
+  <button id="favorites" type="button" class="btn btn-link "  (click)="change_class_fav($event); $event.preventDefault();" type="submit" >Favorites</button>
+  <br>
+  <br>
+
+  <div class="progress" *ngIf="progress" style="margin-top:6%;">
+
+
+    <div class="progress-bar progress-bar-striped" role="progressbar" style="width: 50%" aria-valuenow="50" aria-valuemin="0" aria-valuemax="100"></div>
+  </div>
+<div class="container text-centre" *ngIf="result_tab" >
+
+    <div class="alert alert-warning" role="alert" *ngIf="no_rec">
+     
+     
+      No Records Found
+    </div>
+    <div name="results">  
+
+      <div class="alert alert-danger" role="alert" *ngIf="error_flag">
+     
+     
+       Couldn't fetch records
+      </div>
+      <div name="results">  
+
+
+   <div  *ngIf="event_lis_flag"> 
+
+    <div class="row justify-content-end mb-2 mb-lg-3">
+      <button class="btn btn-light" (click)="toggleDiv()" [disabled]="details_disabled">
+        <i class="material-icons align-bottom">
+          keyboard_arrow_right
+        </i>
+        Details
+      </button>
+      </div>
+
+      <div class="table-responsive justify-content-center">
+      <table class="table table-hover" >
+        <thead>
+          <tr>
+            <th scope="col">#</th>
+            <th scope="col">Date</th>
+            <th scope="col">Event</th>
+            <th scope="col">Category</th>
+            <th scope="col">Venue Info</th>
+            <th scope="col">Favorites</th>
+
+
+          </tr>
+        </thead>
+        <tbody>
+          
+            <tr *ngFor="let item of event_list; index as i ">
+              <td>{{i+1}}</td>
+
+              <td>{{item[0]}}</td>
+              <td><a href="javascript:;" title= "{{item[1]}}" id={{item[4]}} class="{{item[5]+' '+i}}" data-toggle="tooltip" (click)="getEventDetails($event)">{{item[1] | slice:0:25}}</a></td>
+              <td>{{item[2]}}</td>
+              <td>{{item[3]}}</td>
+    
+                <td><button  class="btn" style="background: transparent;" *ngIf="!getfavoselecetd(item[4])"   (click)=set_local_storage($event)><i class="material-icons star" [id] = i #this style="background: transparent;" >star_border</i></button>
+
+
+                <button  class="btn" style="background: transparent;" *ngIf="getfavoselecetd(item[4])" (click)=set_local_storage($event)><i class="material-icons grade" [id] = i #this style="background: transparent;" >grade</i></button></td>
+
+              <script>
+              </script>
+              
+            </tr> 
+        </tbody>
+      </table>
+    </div>
+
+      
+      </div>
+      </div>
+      <div class="page" *ngIf="eventFetched" [@flyIn]="false">
+        <h4>{{data_arr[0].name}}</h4>
+      
+        <div class="float-right">
+            <a href="{{twitter_url}}" target = "_blank" class="btn btn-link twitter-hashtag-button"  ><img style="height:38px;width:auto"src="https://csci571.com/hw/hw8/images/Twitter.png"></a>
+
+            <p style="display: inline;"><button  class="btn" style="background: transparent;" *ngIf="!getfavoselecetd(event_list[event_fav][4])"   (click)=set_local_storage($event)><i class="material-icons star" id = {{event_fav}} style="background: transparent;" >star_border</i></button>
+
+
+              <button  class="btn" style="background: transparent;" *ngIf="getfavoselecetd(event_list[event_fav][4])" (click)=set_local_storage($event)><i class="material-icons grade" id = {{event_fav}} style="background: transparent;" >grade</i></button></p>
+
+            <!-- <button class="btn btn-light" (click)=set_local_storage($event)><i  id= {{event_fav}} class = "material-icons star">star_border</i></button> -->
+      
+          </div>
+          <div class="row justify-content-start mb-2 mb-lg-3">
+            <button  class="btn btn-light" (click)="getresultstab()">
+              <i class="material-icons align-bottom">
+                keyboard_arrow_left
+              </i>
+              List
+            </button>
+            </div>
+      
+            <nav>
+              <div class="nav nav-tabs justify-content-end" id="nav-tab" role="tablist">
+                <a class="nav-item nav-link active" id="event_tab" data-toggle="tab" href="#nav-event" role="tab" aria-controls="nav-home" aria-selected="true">Event</a>
+                <a class="nav-item nav-link" id="artist_tab" data-toggle="tab" href="#nav-artist" role="tab" aria-controls="nav-profile" aria-selected="false">Artist/Teams</a>
+                <a class="nav-item nav-link" id="nav-contact-tab" data-toggle="tab" href="#nav-venue" role="tab" aria-controls="nav-contact" aria-selected="false">Venue</a>
+              </div>
+            </nav>
+      
+      
+            <div class="tab-content" id="nav-tabContent" >
+              <div class="tab-pane fade show active" id="nav-event" role="tabpanel" aria-labelledby="nav-home-tab">
+      
+                <table class="table table-striped" >
+                  <tbody *ngFor="let key of data_arr">
+                    <tr *ngIf='key.artist.length !=0'>
+                      <td>
+                        <b>Artist/Teams</b>
+                      </td>
+                      <td>
+                        {{key.artist.join(' | ')}}
+                      </td>
+          
+                    </tr>
+                    <tr *ngIf='key.venue !=""'>
+                      <td>
+                        <b>Venue</b>
+                      </td>
+                      <td>
+                        {{key.venue}}
+                      </td>
+          
+                    </tr>
+                    <tr *ngIf='key.date !=""'>
+                      <td>
+                        <b>Time</b>
+                      </td>
+                      <td>
+                        {{key.date | date : 'mediumDate'}}
+                      </td>
+          
+                    </tr>
+                    <tr *ngIf='key.category !=""'>
+                      <td>
+                        <b>Category</b>
+                      </td>
+                      <td>
+                        {{key.category}}
+                      </td>
+          
+                    </tr>
+                    <tr *ngIf='key.price !=""'>
+                      <td>
+                        <b>Price Range</b>
+                      </td>
+                      <td>
+                        {{key.price}} USD
+                      </td>
+          
+                    </tr>
+                    <tr *ngIf='key.status !=""'>
+                      <td>
+                        <b>Ticket Status</b>
+                      </td>
+                      <td>
+                        {{key.status}} 
+                      </td>
+          
+                    </tr>
+                    <tr *ngIf='key.ticket !=""'>
+                      <td>
+                        <b>By Ticket at</b>
+                      </td>
+                      <td>
+                        <a href="{{key.ticket}}" target="_blank">Ticketmaster</a>
+                        
+                      </td>
+          
+                    </tr>
+                    <tr *ngIf='key.seatmap !=""'>
+                      <td>
+                        <b>Seat Map</b>
+                      </td>
+                      <td>
+                        <a href='' id="{{key.seatmap}}" (click)="getseatMap($event)" target="_blank" data-toggle="modal" data-target="#myModal" >View Seat Map Here</a>
+                        
+                      </td>
+          
+                    </tr>
+          
+                  </tbody>
+                </table>
+            
+              </div>
+              <div class="tab-pane fade" id="nav-artist" style="min-height: 250px;"role="tabpanel" aria-labelledby="nav-profile-tab">
+      
+                <div>
+                  <br>
+                  <br>
+                  <div class="alert alert-warning" role="alert" *ngIf="keys_artist.length == 0 || !isspotify">
+                    No Records Found
+                  </div>
+                </div>
+      
+                <div  *ngFor="let key of spotify;index as i ">
+                  <h6 class="text-center">{{keys_artist[i]}}</h6>
+                  <p class="text-center" style="font-size: small;" *ngIf="!get_params_status(i)">No details available</p><br>
+                  <table class="table" *ngIf="get_params_status(i)">
+                    <tbody>
+                    <tr *ngIf="key.name!=''">
+                      <td>
+                        <b>Name</b>
+                      </td>
+                      <td>
+                        {{key.name}}
+                      </td>
+                    </tr>
+                    <tr *ngIf="key.followers!=''">
+                      <td>
+                        <b>Followers</b>
+                      </td>
+                      <td>
+                        {{key.followers}}
+                      </td>
+                      </tr>
+                    <tr *ngIf="key.popularity!=''">
+                      <td style="vertical-align: middle;">
+                        <b>Popularity</b>
+                      </td>
+                      <td>
+                        <!-- <div>
+                        <round-progress [current]="key.popularity" [max]="100" style="width: 50px; height: 50px;"><div style="position: absolute;">50</div></round-progress>
+                        
+                        </div> -->
+                        <div class="progress-wrapper" style="width: 50px; height: 50px;">
+                          <round-progress [current]="key.popularity" [max]="100" style="width: 50px; height: 50px;"><div style="position: absolute;">50</div></round-progress>
+                          <div class="text">{{key.popularity}}</div>
+                      </div>
+                      </td>
+                      </tr>
+                      <tr *ngIf="key.check!=''">
+                        <td>
+                          <b>Check At</b>
+                        </td>
+                        <td>
+                          <a href="{{key.check}}" target="_blank" style="text-decoration: none;">Spotify</a>
+                        </td>
+                        </tr>
+                      </tbody>
+                  </table>
+      
+                </div>
+      
+      
+      
+      
+              </div>
+              <div class="tab-pane fade" id="nav-venue" role="tabpanel" style="min-height: 250px;" aria-labelledby="nav-contact-tab">
+      
+      
+      
+                <table class="table" *ngFor="let item of venue_details;">
+                  <tbody>
+                    <tr *ngIf='item.address !=""'>
+                      <td class="key_head">
+                        <b>Address</b>
+        
+                      </td>
+                      <td>
+                        {{item.address}}
+                      </td>
+                    </tr>
+                    <tr *ngIf='item.city !=""'>
+                      <td class="key_head">
+                        <b>City</b>
+        
+                      </td>
+                      <td>
+                        {{item.city}}
+                      </td>
+                      </tr>
+                      <tr *ngIf='item.phone !=""'>
+                        <td class="key_head">
+                          <b>Phone Number</b>
+          
+                        </td>
+                        <td>
+                          {{item.phone}}
+                        </td>
+                        </tr>
+        
+                        <tr *ngIf='item.open !=""'>
+                          <td class="key_head">
+                            <b>Open Hours</b>
+            
+                          </td>
+                          <td>
+                            {{item.open}}
+                          </td>
+                          </tr>
+        
+                          <tr *ngIf='item.general !=""'>
+                            <td >
+                              <b>General Rule</b>
+              
+                            </td>
+                            <td>
+                              {{item.general}}
+                            </td>
+                            </tr>
+                            <tr *ngIf='item.child !=""'>
+                              <td class="key_head">
+                                <b>Child Rule</b>
+                
+                              </td>
+                              <td>
+                                {{item.child}}
+                              </td>
+                              </tr>
+        
+        
+                  </tbody>
+                </table>
+                <br>
+      
+      
+              <agm-map [latitude]=lat [longitude]=lng>
+                <agm-marker [latitude]=lat [longitude]=lng></agm-marker>
+              </agm-map>
+              <br>
+              </div>
+            </div>
+      
+      
+      
+      
+      
+      
+        </div>
+      </div>
+
+</div>
+        
+<div class="container text-centre" *ngIf="fav_tab">
+
+  <div class="alert alert-warning" role="alert" *ngIf="favorites_array.length==0 ">
+    No Records Found
+  </div>
+
+    <table class="table table-hover" *ngIf="favorites_array.length>0" >
+      <thead>
+        <tr>
+          <th scope="col">#</th>
+          <th scope="col">Date</th>
+          <th scope="col">Event</th>
+          <th scope="col">Category</th>
+          <th scope="col">Venue Info</th>
+          <th scope="col">Favorites</th>
+
+
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <tr *ngFor="let item of favorites_array; index as i ">
+            <td>{{i+1}}</td>
+
+            <td>{{item[0]}}</td>
+            <!-- <td><a href="javascript:;" title= "{{item[1]}}" id={{item[4]}} class="{{item[5]+' '+i}}" data-toggle="tooltip" (click)="getEventDetails($event)"></a></td> -->
+
+            <td><a href="javascript:;" id={{item[4]}} title= "{{item[1]}}" class="{{item[5]+' '+i}}" data-toggle="tooltip"  (click)="getEventDetails($event)">{{item[1] | slice:0:25}}</a></td>
+            <td>{{item[2]}}</td>
+            <td>{{item[3]}}</td>
+  
+              <td><button   style="background: transparent;border:none;"  (click)=del_storage($event)><i class="material-icons" id={{item[4]}} style="background: transparent;">delete</i></button></td>
+              <script>
+                function toggle(event){
+                    console.log('html')
+  
+                }
+              </script>
+            
+          </tr> 
+      </tbody>
+    </table>
+
+    
+
+</div>
+
+
+<div class="container">
+
+<div class="modal fade" id="myModal" role="dialog">
+  <div class="modal-dialog">
+  
+    <!-- Modal content-->
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 class="modal-title">View Seat Map</h2>
+
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+      </div>
+      <div class="modal-body">
+        <img [src]=seat_map style="width: 100%;">
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+    
+  </div>
+</div>
+
+

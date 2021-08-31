@@ -1,0 +1,172 @@
+a.event_link:link {
+    text-decoration: underline;
+  }
+
+
+
+  th{
+    font-size: medium;
+    text-align: left;
+    
+  }
+
+  td{
+      font-size: 0.5 rem;
+      vertical-align: middle;
+  }
+  tbody{
+    text-align: left;
+    font-size: medium;
+    
+  }
+  #map {
+    height: 400px;
+    /* The height is 400 pixels */
+    width: 100%;
+    /* The width is the width of the web page */
+  }
+
+
+
+  .progress-wrapper{
+    position: relative;
+}
+
+.progress-wrapper .text{
+    position: absolute;
+    top: 50%;
+    left: 0;
+    transform: translateY(-50%);
+    -webkit-transform: translateY(-50%);
+    text-align: center;
+    width: 100%;
+    z-index: 1;
+}
+
+  .jumbotron {
+    padding: 0.5rem 2rem;
+}
+  a.nav-item{
+    text-decoration: none;
+  }
+
+.result .mat-tab-label {
+    min-width: 25 rem !important;
+    padding: 5px;
+    background-color: transparent;
+    color: #0062cc ;
+    font-weight: 700;
+    opacity: 1;
+}
+
+/* Styles for the active tab label */
+.result .mat-tab-label.mat-tab-label-active {
+    color: #ffffff;
+    background-color:#0062cc !important;;
+    border-color: #dee2e6 #dee2e6 #fff;
+
+    opacity: 1;
+}
+
+/* Styles for the ink bar */
+.result .mat-ink-bar {
+    background-color: green;
+
+    
+}
+
+.result .mat-tab-label {
+    border: 1px solid transparent;
+    border-top-left-radius: .25rem;
+    border-top-right-radius: .25rem;
+    border-bottom-right-radius: .25rem;
+
+    border-bottom-left-radius: .25rem;
+
+}
+
+
+.result .mat-ink-bar {
+  display: none;
+}
+.result .remove-border-bottom .mat-tab-header {
+    border-bottom: none;
+}
+
+
+.event .mat-tab-label {
+    border: 1px solid transparent;
+    width: 94px !important;
+    border-top-left-radius: .25rem;
+    border-top-right-radius: .25rem;
+}
+
+.event .mat-tab-label-active {
+   color: #495057;
+    background-color: #fff;
+    border-color: #dee2e6 #dee2e6 #fff;
+}
+
+.event .mat-tab-header {
+    align-self: right!important;
+    font-size: 1px;
+  }
+.mat-ripple .mat-tab-label .mat-focus-indicator .mat-tab-label-active .ng-star-inserted {
+width: 20px;
+}
+.event .mat-ink-bar {
+  display: none;
+}
+#map {
+    height: 400px;
+    /* The height is 400 pixels */
+    width: 100%;
+    /* The width is the width of the web page */
+  }
+
+  .key_head{
+    white-space: nowrap;
+  }
+
+  .icons_mat{
+    vertical-align: bottom;
+
+  }
+
+  .grade{
+    color:#e8e811;
+
+    content: "grade";
+    font-size: 41px;;
+
+
+  }
+
+  .grade ::after{
+
+
+    content: "grade";
+
+  }
+  .star{
+    color:black;
+    content:"star_border";
+    font-size: 41px;
+
+  }
+
+  agm-map {
+    height: 300px;
+  }
+
+
+
+  @media only screen and (max-width: 600px) {
+    table {
+      table-layout: fixed;
+      word-wrap:break-word;
+    }
+    #nav-tab{
+      width: 100%;
+    }
+  }
