@@ -44,7 +44,7 @@ import {MatTooltipModule} from '@angular/material/tooltip';
     RoundProgressModule,
     MatTooltipModule,
     AgmCoreModule.forRoot({
-      apiKey: 'AIzaSyAcSMaNFC5VFoUJPAEoPioTmkoutY7864c'
+      apiKey: 'API_KEY'
     })
     
 
